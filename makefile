@@ -17,9 +17,11 @@ UTILS := $(_UTILS:$(UTILDIR)/%.c=$(BINDIR)/%)
 all: $(BINDIR)/$(BINARYNAME) $(UTILS)
 
 $(BINDIR)/$(BINARYNAME): $(OBJECTS)
+	mkdir -p bin
 	$(CC) -o $@ $^ $(LIBS)
 
 $(BINDIR)/%: $(UTILDIR)/%.c $(DEPS)
+	mkdir -p bin
 	$(CC) -o $@ $< $(CFLAGS) $(LIBS)
 
 $(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS)
