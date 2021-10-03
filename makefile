@@ -23,6 +23,7 @@ $(BINDIR)/%: $(UTILDIR)/%.c $(DEPS)
 	$(CC) -o $@ $< $(CFLAGS) $(LIBS)
 
 $(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS)
+	mkdir -p src/obj
 	$(CC) -c -o $@ $< $(CFLAGS) $(LIBS)
 
 .PHONY: clean
