@@ -18,9 +18,10 @@ As mentioned in the ReadMe, overuse of pointers is intentional. :D
 #define RN MPFR_RNDN // for easy typing later on
 
 // Given a bit-precision value, return the number of significant decimal digits supported at that precision level
-int decimal_digits(int precision_bits){
-	return mpfr_get_str_ndigits(10, precision_bits);
-}
+// Requires MPFR 4.1.0, Removed for now
+//int decimal_digits(int precision_bits){
+//	return mpfr_get_str_ndigits(10, precision_bits);
+//}
 
 // free the memory from a mpfr_t array with n elements
 static void mpfr_array_clear_foo(mpfr_t* temp, int n){
