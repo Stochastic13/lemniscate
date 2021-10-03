@@ -19,4 +19,6 @@ jobs:
         run: sudo apt-get install -y libmpfr-dev libgmp-dev
 
       - name: Compile and Build
-        run: make
+        run: |
+          make
+          make clean
