@@ -64,7 +64,7 @@ int  main(int argc, char** argv){
 	}
 	if (strcmp(*(argv + 1), "dpn") == 0){
 		for (int i = 0; i < argc - 2; i++){
-			printf("A precision of %s gives you %d decimal digits\n", *(argv + 2 + i), mpfr_get_str_ndigits(10, atoi(*(argv + 2 + i))));
+			printf("A precision of %s gives you %d decimal digits\n", *(argv + 2 + i), decimal_digits(atoi(*(argv + 2 + i))));
 		}
 	}
 	if (strcmp(*(argv + 1), "mr") == 0){
