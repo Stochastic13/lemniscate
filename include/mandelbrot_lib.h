@@ -16,6 +16,8 @@ struct BboxPiece{  //holds the piece-details (location in complex plane and the 
 	unsigned int wh;  //height and width in number of pixels (only square pieces to ease the management)
 };
 
+int decimal_digits(int precision_bits);
+
 static void mpfr_array_clear_foo(mpfr_t* temp, int n);
 
 static void mpfr_array_init_foo(mpfr_t* temp, unsigned int n, unsigned int* p);
