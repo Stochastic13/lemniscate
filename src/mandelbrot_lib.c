@@ -150,7 +150,7 @@ int handler(int argc, char** argv){
 	struct BboxPiece bb;
 	long int prec = strtol(*(argv + 2), NULL, 10); // to feed to mpfr_init2
 	if ((prec < MPFR_PREC_MIN) || (prec > (MPFR_PREC_MAX - 32))){  // 32 is for extra safety (see MPFR docs)
-		printf("%s%d%d\n", "C ERROR: Precision entered is incorrect. Min and Max values supported are: ", MPFR_PREC_MIN, MPFR_PREC_MAX);
+		printf("%s%d%d\n", "C ERROR: Precision entered is incorrect. Min and Max values supported are: ", MPFR_PREC_MIN, (int) MPFR_PREC_MAX);
 		return -1;
 	}
 	unsigned int prec2 = (unsigned int)prec;  // for use later in the code
