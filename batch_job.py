@@ -149,7 +149,7 @@ def parse_job_file(filename):
     return output
 
 
-def run2_c(n_processes=None, max_iter=10, bb=None, cutoff=2, path='.', w=10, h=10, piece=5, prec=32,
+def run2_c(n_processes=None, max_iter=100, bb=None, cutoff=2, path='.', w=100, h=100, piece=10, prec=32,
            bin_path='./bin/mandelbrot', **kwargs):
     if n_processes is None:
         n_processes = os.cpu_count()
