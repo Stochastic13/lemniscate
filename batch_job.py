@@ -152,7 +152,7 @@ def parse_job_file(filename):
     return output
 
 
-def run2_c(n_processes=5, max_iter=1000, bb=None, cutoff=2, update_freq=10, path='.', w=500, h=500, piece=100, prec=128,
+def run2_c(n_processes=5, max_iter=100, bb=None, cutoff=2, update_freq=10, path='.', w=100, h=100, piece=20, prec=32,
            bin_path='./bin/mandelbrot', **kwargs):
     if bb is None:
         bounding_box = ((decimal.Decimal('-1'), decimal.Decimal('-1')),
