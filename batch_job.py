@@ -97,13 +97,12 @@ def worker_foo_verbose(q_in, q_out, pid, bin_path, path, logfile):
     logfile.write('DYING.', str(pid))
 
 
-def worker_main(gen_args, work_q, result_q, death_event, path, update_freq, logfile):
+def worker_main(gen_args, work_q, result_q, death_event, path, logfile):
     logfile.write('BORN.', -1)
     import pickle
     import time
     import queue
     start_time = time.time()
-    prev_loop_time = start_time
     index = 0
     logfile.write('MAKING GEN.', -1)
     gen = job_creator_large(*gen_args)
@@ -116,7 +115,7 @@ def worker_main(gen_args, work_q, result_q, death_event, path, update_freq, logf
     tqdm_obj = tqdm.tqdm(desc='Computation Progress', total=total_tasks, unit='sub-units')
     while not death_event.is_set():
         try:
-            result = result_q.get(timeout=update_freq - (time.time() - prev_loop_time))
+            result = result_q.get(timeout=10)
             logfile.write('RECEIVED A RESULT.', -1)
             if len(result.result) > 0:
                 f = open(f'{path}/errors/{index}', 'wb')
@@ -128,11 +127,9 @@ def worker_main(gen_args, work_q, result_q, death_event, path, update_freq, logf
             tqdm_obj.update(1)
         except queue.Empty:
             logfile.write('NO RESULTS.', -1)
-        if (time.time() - prev_loop_time) >= update_freq:
-            logfile.write('UPDATING STATUS.', -1)
-            prev_loop_time = time.time()
         if index == total_tasks:
             death_event.set()
+            tqdm_obj.close()
             break
     time.sleep(10)  # wait for all processes to die properly
     logfile.write('DYING.', -1)
@@ -152,7 +149,7 @@ def parse_job_file(filename):
     return output
 
 
-def run2_c(n_processes=None, max_iter=10, bb=None, cutoff=2, update_freq=10, path='.', w=10, h=10, piece=5, prec=32,
+def run2_c(n_processes=None, max_iter=10, bb=None, cutoff=2, path='.', w=10, h=10, piece=5, prec=32,
            bin_path='./bin/mandelbrot', **kwargs):
     if n_processes is None:
         n_processes = os.cpu_count()
@@ -173,27 +170,37 @@ def run2_c(n_processes=None, max_iter=10, bb=None, cutoff=2, update_freq=10, pat
     death_event = multiprocessing.Event()
     death_event.clear()
     logfile = LogFile(f'{path}/main_log_{int(time.time())}.log')
-    a = (gen_args, work_q, result_q, death_event, path, update_freq, logfile)
-    p = multiprocessing.Process(target=worker_main, daemon=True, args=a)
-    p.start()
+    a = (gen_args, work_q, result_q, death_event, path, logfile)
+    p1 = multiprocessing.Process(target=worker_main, daemon=True, args=a)
+    p1.start()
     print('Started the main_worker process.')
+    workers = []
     for pid in range(n_processes):
         a = (work_q, result_q, pid, bin_path, path, logfile)
-        p = multiprocessing.Process(target=worker_foo_verbose, daemon=True, args=a)
-        p.start()
+        p2 = multiprocessing.Process(target=worker_foo_verbose, daemon=True, args=a)
+        p2.start()
+        workers.append(p2)
     with open(f'{path}/run_config.log', 'w') as f:
         f.write(f'n_processes : {n_processes}\n')
-        f.write(f'update_freq : {update_freq}\n')
         f.write(f'Width/Height/Piece : {w}/{h}/{piece}\n')
         f.write('Main bounding_box : ' + ','.join([str(x[0]) + '/' + str(x[1]) for x in bounding_box]) + '\n')
         f.write('Computing_function : run2_c\n')
         f.write(f'Starting time : {time.time()}\n')
         death_event.wait()
+        p1.join()
+        for p in workers:
+            p.join()
         f.write(f'Ending Time: {time.time()}')
     print('Successfully Completed!')
 
 
 if __name__ == '__main__':
+    try:
+        from pytest_cov.embed import cleanup_on_sigterm
+    except ImportError:
+        pass
+    else:
+        cleanup_on_sigterm()
     if len(sys.argv) > 1:
         filename = sys.argv[1]
         run2_c(**parse_job_file(filename))
