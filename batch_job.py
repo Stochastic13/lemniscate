@@ -117,7 +117,7 @@ def worker_main(gen_args, work_q, result_q, death_event, path, logfile):
         try:
             result = result_q.get(timeout=10)
             logfile.write('RECEIVED A RESULT.', -1)
-            if len(result.result) > 0:
+            if result.result > 0:
                 f = open(f'{path}/errors/{index}', 'wb')
                 f.write(pickle.dumps(result))
                 f.close()
